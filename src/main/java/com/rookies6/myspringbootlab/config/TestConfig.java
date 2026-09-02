@@ -3,7 +3,13 @@ package com.rookies6.myspringbootlab.config;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-@Profile("test")
 @Configuration
+@Profile("test")
 public class TestConfig {
+    public MyEnvironment myEnvironment() {
+        return MyEnvironment.builder()
+                .mode("개발환경")
+                .build();
+    }
+
 }
