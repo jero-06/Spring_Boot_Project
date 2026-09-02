@@ -29,8 +29,8 @@ public class MyPropRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        System.out.println("Myprop username = " + username);
-        System.out.println("Myprop int = " + port);
+           logger.debug("Myprop username ={}", username);
+        logger.info("Myprop int ={}", port);
 
         logger.info("username = {}", myPropProperties.getUsername());
         logger.info("port = {}", myPropProperties.getPort());
