@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 //StudentDTO
 public class StudentDTO {
 
+    // 요청 데이터를 저장하는 Inner Class
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -25,6 +26,7 @@ public class StudentDTO {
         private String studentNumber;
     }
 
+    // 응답 데이터를 저장하는 Inner Class
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
