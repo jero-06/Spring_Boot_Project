@@ -24,6 +24,7 @@ public enum ErrorCode {
 
     // ... 가변적인 아규먼트 (Variable Arguments)
     public String formatMessage(Object... args) {
+
         return String.format(messageTemplate, args);
     }
 }
