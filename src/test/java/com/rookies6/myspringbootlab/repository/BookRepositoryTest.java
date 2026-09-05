@@ -12,6 +12,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Transactional
 @SpringBootTest
 public class BookRepositoryTest {
 
@@ -70,6 +71,12 @@ public class BookRepositoryTest {
         // Then(검증단계): 다시 조회해서 변경된 값 확인
         Book updatedBook = bookRepository.findByIsbn("9788956746425").get();
         assertEquals(33333, updatedBook.getPrice());
+    }
+
+    // 도서 삭제 테스트 ( testDeleteBook() )
+    @Test
+    void testDeleteBook() {
+
     }
 }
 
