@@ -52,8 +52,8 @@ public class BookRepositoryTest {
 
         // Then(검증단계)
         assertTrue(foundBook.isPresent());
-        assertEquals("박둘리", book.getAuthor());                    // Optional 안의 Book 객체에서 author를 꺼내서 비교
+        assertEquals("JPA 프로그래밍", foundBook.get().getTitle());                    // Optional 안의 Book 객체에서 author를 꺼내서 비교
     }
-    }
+}
 
 
