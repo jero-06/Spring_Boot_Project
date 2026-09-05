@@ -56,6 +56,21 @@ public class BookRepositoryTest {
         // Then(검증단계)
         assertEquals(2, foundBooks.size());
     }
+
+    // 도서 정보 수정 테스트 ( testUpdateBook() )
+    @Test
+    void testUpdateBook() {
+        // Given(준비단계): 수정할 도서를 isbn으로 조회
+        Book book = bookRepository.findByIsbn("9788956746425").get();
+
+        // When(실행단계): 값을 변경하고 저장
+        book.setPrice(33333);
+        bookRepository.save(book);
+
+        // Then(검증단계): 다시 조회해서 변경된 값 확인
+        Book updatedBook = bookRepository.findByIsbn("9788956746425").get();
+        assertEquals(33333, updatedBook.getPrice());
+    }
 }
 
 
