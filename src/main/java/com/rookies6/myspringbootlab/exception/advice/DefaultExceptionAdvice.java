@@ -1,7 +1,6 @@
 package com.rookies6.myspringbootlab.exception.advice;
 
 import com.rookies6.myspringbootlab.exception.BusinessException;
-import com.rookies6.myspringbootlab.exception.ErrorObject;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -77,6 +76,7 @@ public class DefaultExceptionAdvice {
 
         log.error(ex.getMessage(), ex);
 
+        //ex.getBindingResult() 호출하면 검증오류정보를 담고 있는 BindingResult 객체가 반환됨
         Map<String, String> errors = new HashMap<>();
         ex.getBindingResult()
                 .getAllErrors()
