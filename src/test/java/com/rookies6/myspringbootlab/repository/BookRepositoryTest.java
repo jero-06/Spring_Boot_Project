@@ -51,10 +51,10 @@ public class BookRepositoryTest {
     @Test
     void testFindByAuthor() {
         // When(실행단계): 저자명으로 목록 조회
-        Optional<Book> foundBooks = bookRepository.findByAuthor("홍길동");
+        List<Book> foundBooks = bookRepository.findByAuthor("홍길동");
 
         // Then(검증단계)
-        assertEquals("홍길동", foundBooks.size());
+        assertEquals(2, foundBooks.size());
     }
 }
 
