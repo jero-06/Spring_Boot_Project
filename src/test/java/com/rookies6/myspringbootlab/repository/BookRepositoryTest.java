@@ -76,7 +76,15 @@ public class BookRepositoryTest {
     // 도서 삭제 테스트 ( testDeleteBook() )
     @Test
     void testDeleteBook() {
+        // Given(준비단계): 삭제할 도서를 isbn으로 조회
+        Book book = bookRepository.findByIsbn("9788956747117").get();
 
+        // When(실행단계): 조회한 도서를 삭제
+        bookRepository.delete(book);
+
+        // Then(검증단계): 다시 조회했을 때 존재하지 않아야 함
+        Optional<Book> deletedBook = bookRepository.findByIsbn("9788956747117");
+        assertTrue(deletedBook.isEmpty());
     }
 }
 
