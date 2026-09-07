@@ -58,7 +58,17 @@ public class BookRestController {
         book.setPrice(bookDetails.getPrice());
         book.setPublishDate(bookDetails.getPublishDate());
 
-        return bookRepository.save(book);   // 변경된 book을 DB에 반영하려면?
+        return bookRepository.save(book);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteBook(@PathVariable Long id) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("해당 Id의 도서를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
+
+        bookRepository.delete(book);
+
+        return ResponseEntity.noContent().build();
     }
 
 
