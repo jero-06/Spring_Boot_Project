@@ -44,9 +44,22 @@ public class BookRestController {
     @GetMapping("/isbn/{isbn}")
     public Book getUserByIsbn(@PathVariable String isbn) {
         return bookRepository.findByIsbn(isbn)
-                .orElseThrow(() -> new BusinessException("책을 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new BusinessException("해당 번호의 도서를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
     }
 
+    // 도서 정보 수정
+    @PutMapping("/{id}")
+    public Book updateBook(@PathVariable Long id, @RequestBody Book bookDetails) {
+        Book book = bookRepository.findById(id)
+                .orElseThrow(() -> new BusinessException("해당 Id의 도서를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
+
+        book.setTitle(bookDetails.getTitle());
+        book.setAuthor(bookDetails.getAuthor());
+        book.setPrice(bookDetails.getPrice());
+        book.setPublishDate(bookDetails.getPublishDate());
+
+        return bookRepository.save(book);   // 변경된 book을 DB에 반영하려면?
+    }
 
 
 }
