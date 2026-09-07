@@ -44,9 +44,7 @@ public class BookRestController {
     @GetMapping("/isbn/{isbn}")
     public Book getUserByIsbn(@PathVariable String isbn) {
         return bookRepository.findByIsbn(isbn)
-                .orElseThrow(() -> new BusinessException("책을 찾을 수 없습니다.", HttpStatus.404));
-        // Optional이 비어있을 때 그냥 기본값을 리턴하는 게 아니라, "예외를 던지는" 방식의 메서드가 있어요.
-        // findById 때 썼던 map/orElse와는 다른, orElse와 이름이 비슷한 메서드입니다. 뭘까요?
+                .orElseThrow(() -> new BusinessException("책을 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
     }
 
 
