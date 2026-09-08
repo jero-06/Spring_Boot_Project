@@ -41,10 +41,10 @@ public class BookDTO {
     @Getter
     @Setter
     public static class BookUpdateRequest {
-        Integer price;
-        String title;
-        String author;
-        LocalDate publishDate;
+        private Integer price;
+        private String title;
+        private String author;
+        private LocalDate publishDate;
     }
 
 }
