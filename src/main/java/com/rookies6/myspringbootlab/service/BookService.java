@@ -31,15 +31,30 @@ public class BookService {
     // Id 조회
     public BookDTO.BookResponse getBookById(Long id) {
         Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("해당 Id의 도서를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+                .orElseThrow(() -> new BusinessException("해당 Id의 도서를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
         return BookDTO.BookResponse.from(book);
     }
 
     // Isbn 조회
     public BookDTO.BookResponse getBookByIsbn(String isbn) {
         Book book = bookRepository.findByIsbn(isbn)
-                .orElseThrow(() -> new BusinessException("해당 번호의 도서를 찾을 수 없습니다.", HttpStatus.NOT_FOUND);
+                .orElseThrow(() -> new BusinessException("해당 번호의 도서를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
         return BookDTO.BookResponse.from(book);
+    }
+
+    // 작가 조회
+    public List<BookDTO.BookResponse> getBooksByAuthor(String author) {
+        return bookRepository.findByAuthor(author)
+                .stream()
+                .map(book -> BookDTO.BookResponse.from(book))
+                .toList();
+    }
+
+    @Transactional
+    public BookDTO.BookResponse createBook(BookDTO.BookCreateRequest request) {
+        Book book = request.toEntity();
+        Book savedBook = bookRepository.save(book);
+        return BookDTO.BookResponse.from(savedBook);
     }
 
 }
