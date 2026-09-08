@@ -1,14 +1,12 @@
 package com.rookies6.myspringbootlab.service;
 
-import com.rookies6.myspringbootlab.controller.dto.BookDTO;
+import com.rookies6.myspringbootlab.dto.BookDTO;
 import com.rookies6.myspringbootlab.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
