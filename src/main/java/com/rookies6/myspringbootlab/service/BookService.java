@@ -61,7 +61,7 @@ public class BookService {
     public BookDTO.BookResponse updateBook(Long id, BookDTO.BookUpdateRequest request) {
         Book existBook = bookRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND,
-                        "Student", "id", id));
+                        "Book", "id", id));
 
         if (request.getTitle() != null) {
             existBook.setTitle(request.getTitle());
@@ -80,4 +80,13 @@ public class BookService {
         return BookDTO.BookResponse.from(updatedBook);
     }
 
+    @Transactional
+    public void deleteBook(Long id) {
+        if (!bookRepository.existsById(id)){
+            throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND,
+                    "Student", "id", id);
+        }
+        bookRepository.deleteById(id);
+
+    }
 }
