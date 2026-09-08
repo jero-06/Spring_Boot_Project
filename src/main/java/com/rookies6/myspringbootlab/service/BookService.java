@@ -57,4 +57,27 @@ public class BookService {
         return BookDTO.BookResponse.from(savedBook);
     }
 
+    @Transactional
+    public BookDTO.BookResponse updateBook(Long id, BookDTO.BookUpdateRequest request) {
+        Book existBook = bookRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND,
+                        "Student", "id", id));
+
+        if (request.getTitle() != null) {
+            existBook.setTitle(request.getTitle());
+        }
+        if (request.getAuthor() != null) {
+            existBook.setAuthor(request.getAuthor());
+        }
+        if (request.getPrice() != null) {
+            existBook.setPrice(request.getPrice());
+        }
+        if (request.getPublishDate() != null) {
+            existBook.setPublishDate(request.getPublishDate());
+        }
+
+        Book updatedBook = bookRepository.save(existBook);
+        return BookDTO.BookResponse.from(updatedBook);
+    }
+
 }
