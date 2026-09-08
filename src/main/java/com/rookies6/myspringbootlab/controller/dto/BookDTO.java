@@ -38,4 +38,13 @@ public class BookDTO {
         }
     }
 
+    @Getter
+    @Setter
+    public static class BookUpdateRequest {
+        Integer price;
+        String title;
+        String author;
+        LocalDate publishDate;
+    }
+
 }
