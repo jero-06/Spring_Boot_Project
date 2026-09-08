@@ -2,6 +2,7 @@ package com.rookies6.myspringbootlab.controller.dto;
 
 import com.rookies6.myspringbootlab.entity.Book;
 import jakarta.validation.constraints.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,6 +10,7 @@ import java.time.LocalDate;
 
 public class BookDTO {
 
+    // 도서 생성 시 사용되는 DTO
     @Getter
     @Setter
     public static class BookCreateRequest {
@@ -38,6 +40,7 @@ public class BookDTO {
         }
     }
 
+    // 도서 정보 업데이트 시 사용되는 DTO
     @Getter
     @Setter
     public static class BookUpdateRequest {
@@ -45,6 +48,30 @@ public class BookDTO {
         private String title;
         private String author;
         private LocalDate publishDate;
+    }
+
+    // 클라이언트에게 반환되는 도서 정보 DTO
+    @Getter
+    @Setter
+    @Builder
+    public static class BookResponse {
+        private Long id;
+        private String title;
+        private String author;
+        private String isbn;
+        private Integer price;
+        private LocalDate publishDate;
+
+        public static BookResponse from(Book book) {
+            return BookResponse.builder()
+                    .id(book.getId())
+                    .title(book.getTitle())
+                    .author(book.getAuthor())
+                    .isbn(book.getIsbn())
+                    .price(book.getPrice())
+                    .publishDate(book.getPublishDate())
+                    .build();
+        }
     }
 
 }
