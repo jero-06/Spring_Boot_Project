@@ -1,8 +1,9 @@
 package com.rookies6.myspringbootlab.controller;
 
-import com.rookies6.myspringbootlab.entity.Book;
-import com.rookies6.myspringbootlab.exception.BusinessException;
-import com.rookies6.myspringbootlab.repository.BookRepository;
+import com.rookies6.myspringbootlab.dto.BookDTO;
+import com.rookies6.myspringbootlab.service.BookService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,62 +13,59 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/books")
+@RequiredArgsConstructor
 public class BookRestController {
-    private final BookRepository bookRepository;
-
-    public BookRestController(BookRepository bookRepository) {
-        this.bookRepository = bookRepository;
-    }
-
-    // 새 도서 등록
-    @PostMapping
-    public Book createBook(@RequestBody Book book) {
-                return bookRepository.save(book);
-    }
+    private final BookService bookService;
 
     // 모든 도서 조회
     @GetMapping
-    public List<Book> getAllBook() {
-        return bookRepository.findAll();
+    public ResponseEntity<List<BookDTO.BookResponse>> getAllBooks() {
+        List<BookDTO.BookResponse> books = bookService.getAllBooks();
+        return ResponseEntity.ok(books);
     }
 
     // ID로 특정 도서 조회
     @GetMapping("/{id}")
-    public ResponseEntity<Book> getUserById(@PathVariable Long id) {
-
-        return bookRepository.findById(id)
-                .map(book -> ResponseEntity.ok(book))
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<BookDTO.BookResponse> getBookById(@PathVariable Long id) {
+        BookDTO.BookResponse book = bookService.getBookById(id);
+        return ResponseEntity.ok(book);
     }
 
     // ISBN으로 도서 조회
     @GetMapping("/isbn/{isbn}")
-    public Book getUserByIsbn(@PathVariable String isbn) {
-        return bookRepository.findByIsbn(isbn)
-                .orElseThrow(() -> new BusinessException("해당 번호의 도서를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
+    public ResponseEntity<BookDTO.BookResponse> getBookByIsbn(@PathVariable String isbn) {
+        BookDTO.BookResponse book = bookService.getBookByIsbn(isbn);
+        return ResponseEntity.ok(book);
+    }
+
+    // 저자로 도서 목록 조회
+    @GetMapping("/author/{author}")
+    public ResponseEntity<List<BookDTO.BookResponse>> getBooksByAuthor(@PathVariable String author) {
+        List<BookDTO.BookResponse> book = bookService.getBooksByAuthor(author);
+        return ResponseEntity.ok(book);
+    }
+
+    // 새 도서 등록
+    @PostMapping
+    public ResponseEntity<BookDTO.BookResponse> createBook(
+            @Valid @RequestBody BookDTO.BookCreateRequest request) {
+        BookDTO.BookResponse response = bookService.createBook(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     // 도서 정보 수정
     @PutMapping("/{id}")
-    public Book updateBook(@PathVariable Long id, @RequestBody Book bookDetails) {
-        Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("해당 Id의 도서를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
-
-        book.setTitle(bookDetails.getTitle());
-        book.setAuthor(bookDetails.getAuthor());
-        book.setPrice(bookDetails.getPrice());
-        book.setPublishDate(bookDetails.getPublishDate());
-
-        return bookRepository.save(book);
+    public ResponseEntity<BookDTO.BookResponse> updateBook(
+            @PathVariable Long id,
+            @Valid @RequestBody BookDTO.BookUpdateRequest request) {
+        BookDTO.BookResponse response = bookService.updateBook(id, request);
+        return ResponseEntity.ok(response);
     }
 
+    // 도서 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteBook(@PathVariable Long id) {
-        Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("해당 Id의 도서를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
-
-        bookRepository.delete(book);
-
+    public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
+        bookService.deleteBook(id);
         return ResponseEntity.noContent().build();
     }
 

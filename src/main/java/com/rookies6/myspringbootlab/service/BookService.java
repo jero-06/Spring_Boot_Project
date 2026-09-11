@@ -84,7 +84,7 @@ public class BookService {
     public void deleteBook(Long id) {
         if (!bookRepository.existsById(id)){
             throw new BusinessException(ErrorCode.RESOURCE_NOT_FOUND,
-                    "Student", "id", id);
+                    "Book", "id", id);
         }
         bookRepository.deleteById(id);
 
