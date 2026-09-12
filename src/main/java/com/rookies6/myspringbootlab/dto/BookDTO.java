@@ -1,77 +1,102 @@
 package com.rookies6.myspringbootlab.dto;
 
 import com.rookies6.myspringbootlab.entity.Book;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
 public class BookDTO {
 
-    // 도서 생성 시 사용되는 DTO
-    @Getter
-    @Setter
-    public static class BookCreateRequest {
-
-        @NotBlank(message = "제목은 필수입니다.")
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class Request {
+        @NotBlank(message = "Book title is required")
         private String title;
 
-        @NotBlank(message = "저자는 필수입니다.")
+        @NotBlank(message = "Author name is required")
         private String author;
 
-        @NotBlank(message = "ISBN은 필수입니다.")
+        @NotBlank(message = "ISBN is required")
+        @Pattern(regexp = "^(?=(?:\\D*\\d){10}(?:(?:\\D*\\d){3})?$)[\\d-]+$",
+                message = "ISBN must be valid (10 or 13 digits, with or without hyphens)")
         private String isbn;
 
-        @NotNull(message = "가격은 필수입니다.")
+        @PositiveOrZero(message = "Price must be positive or zero")
         private Integer price;
 
+        @Past(message = "Publish date must be in the past")
         private LocalDate publishDate;
 
-        public Book toEntity() {
-            return Book.builder()
-                    .title(title)
-                    .author(author)
-                    .isbn(isbn)
-                    .price(price)
-                    .publishDate(publishDate)
-                    .build();
-        }
+        @Valid
+        private BookDetailDTO detailRequest;
     }
 
-    // 도서 정보 업데이트 시 사용되는 DTO
-    @Getter
-    @Setter
-    public static class BookUpdateRequest {
-        private Integer price;
-        private String title;
-        private String author;
-        private LocalDate publishDate;
-    }
-
-    // 클라이언트에게 반환되는 도서 정보 DTO
-    @Getter
-    @Setter
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
     @Builder
-    public static class BookResponse {
+    public static class BookDetailDTO {
+        private String description;
+        private String language;
+        private Integer pageCount;
+        private String publisher;
+        private String coverImageUrl;
+        private String edition;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class Response {
         private Long id;
         private String title;
         private String author;
         private String isbn;
         private Integer price;
         private LocalDate publishDate;
+        private BookDetailResponse detail;
 
-        public static BookResponse from(Book book) {
-            return BookResponse.builder()
+        public static Response fromEntity(Book book) {
+            BookDetailResponse detailResponse = book.getBookDetail() != null
+                    ? BookDetailResponse.builder()
+                    .id(book.getBookDetail().getId())
+                    .description(book.getBookDetail().getDescription())
+                    .language(book.getBookDetail().getLanguage())
+                    .pageCount(book.getBookDetail().getPageCount())
+                    .publisher(book.getBookDetail().getPublisher())
+                    .coverImageUrl(book.getBookDetail().getCoverImageUrl())
+                    .edition(book.getBookDetail().getEdition())
+                    .build()
+                    : null;
+
+            return Response.builder()
                     .id(book.getId())
                     .title(book.getTitle())
                     .author(book.getAuthor())
                     .isbn(book.getIsbn())
                     .price(book.getPrice())
                     .publishDate(book.getPublishDate())
+                    .detail(detailResponse)
                     .build();
         }
     }
 
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    public static class BookDetailResponse {
+        private Long id;
+        private String description;
+        private String language;
+        private Integer pageCount;
+        private String publisher;
+        private String coverImageUrl;
+        private String edition;
+    }
 }
