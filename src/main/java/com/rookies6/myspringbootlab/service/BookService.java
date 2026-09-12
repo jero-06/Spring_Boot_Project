@@ -29,14 +29,14 @@ public class BookService {
 
     // Id 조회
     public BookDTO.Response getBookById(Long id) {
-        Book book = bookRepository.findById(id)
+        Book book = bookRepository.findByIdWithBookDetail(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Book", "id", id));
         return BookDTO.Response.fromEntity(book);
     }
 
     // Isbn 조회
     public BookDTO.Response getBookByIsbn(String isbn) {
-        Book book = bookRepository.findByIsbn(isbn)
+        Book book = bookRepository.findByIsbnWithBookDetail(isbn)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Book", "isbn", isbn));
         return BookDTO.Response.fromEntity(book);
     }
@@ -111,29 +111,18 @@ public class BookService {
             BookDetail detail = book.getBookDetail();
 
             if (detail == null) {
-                // 원래 상세정보가 없던 책 → 새로 만들어서 연결
-                Book book = Book.builder()
-                        .title(request.getTitle())
-                        .author(request.getAuthor())
-                        .isbn(request.getIsbn())
-                        .price(request.getPrice())
-                        .publishDate(request.getPublishDate())
-                        .build();
-
-                // 3. detailRequest가 있을 때만 BookDetail 생성 + 양방향 연결
-                if (request.getDetailRequest() != null) {
-                    BookDTO.BookDetailDTO detailRequest = request.getDetailRequest();
-                    BookDetail detail = BookDetail.builder()
-                            .description(detailRequest.getDescription())
-                            .language(detailRequest.getLanguage())
-                            .pageCount(detailRequest.getPageCount())
-                            .publisher(detailRequest.getPublisher())
-                            .coverImageUrl(detailRequest.getCoverImageUrl())
-                            .edition(detailRequest.getEdition())
-                            .build();
-
-                    book.setBookDetail(detail);
-                    detail.setBook(book);
+                // 힌트: BookDetail.builder()로 "새 detail"만 만드세요 (Book은 새로 만들지 마세요!)
+                detail = BookDetail.builder()
+                        .description(detailRequest.getDescription())
+                        .language(detailRequest.getLanguage())
+                        .pageCount(detailRequest.getPageCount())
+                        .publisher(detailRequest.getPublisher())
+                        .coverImageUrl(detailRequest.getCoverImageUrl())
+                        .edition(detailRequest.getEdition())
+                        .build();;
+                // detail을 기존 book과 양방향으로 연결
+                book.setBookDetail(detail);
+                detail.setBook(book);
             }
 
             // 기존 detail이든 새로 만든 detail이든, 필드 값을 채워넣기
