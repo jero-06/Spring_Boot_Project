@@ -7,8 +7,6 @@ import com.rookies6.myspringbootlab.exception.BusinessException;
 import com.rookies6.myspringbootlab.exception.ErrorCode;
 import com.rookies6.myspringbootlab.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,20 +30,28 @@ public class BookService {
     // Id 조회
     public BookDTO.Response getBookById(Long id) {
         Book book = bookRepository.findById(id)
-                .orElseThrow(() -> new BusinessException("해당 Id의 도서를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Book", "id", id));
         return BookDTO.Response.fromEntity(book);
     }
 
     // Isbn 조회
     public BookDTO.Response getBookByIsbn(String isbn) {
         Book book = bookRepository.findByIsbn(isbn)
-                .orElseThrow(() -> new BusinessException("해당 번호의 도서를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Book", "isbn", isbn));
         return BookDTO.Response.fromEntity(book);
     }
 
     // 작가 조회
     public List<BookDTO.Response> getBooksByAuthor(String author) {
         return bookRepository.findByAuthorContainingIgnoreCase(author)
+                .stream()
+                .map(book -> BookDTO.Response.fromEntity(book))
+                .toList();
+    }
+
+    // 제목 조회
+    public List<BookDTO.Response> getBooksByTitle(String title) {
+        return bookRepository.findByTitleContainingIgnoreCase(title)
                 .stream()
                 .map(book -> BookDTO.Response.fromEntity(book))
                 .toList();
@@ -90,25 +96,56 @@ public class BookService {
     }
 
     @Transactional
-    public BookDTO.Response updateBook(Long id, BookDTO.BookUpdateRequest request) {
-        Book existBook = bookRepository.findById(id)
-                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND,
-                        "Book", "id", id));
+    public BookDTO.Response updateBook(Long id, BookDTO.Request request) {
+        Book book = bookRepository.findByIdWithBookDetail(id)
+                .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND, "Book", "id", id));
 
-        if (request.getTitle() != null) {
-            existBook.setTitle(request.getTitle());
-        }
-        if (request.getAuthor() != null) {
-            existBook.setAuthor(request.getAuthor());
-        }
-        if (request.getPrice() != null) {
-            existBook.setPrice(request.getPrice());
-        }
-        if (request.getPublishDate() != null) {
-            existBook.setPublishDate(request.getPublishDate());
+        book.setTitle(request.getTitle());
+        book.setAuthor(request.getAuthor());
+        book.setIsbn(request.getIsbn());
+        book.setPrice(request.getPrice());
+        book.setPublishDate(request.getPublishDate());
+
+        if (request.getDetailRequest() != null) {
+            BookDTO.BookDetailDTO detailRequest = request.getDetailRequest();
+            BookDetail detail = book.getBookDetail();
+
+            if (detail == null) {
+                // 원래 상세정보가 없던 책 → 새로 만들어서 연결
+                Book book = Book.builder()
+                        .title(request.getTitle())
+                        .author(request.getAuthor())
+                        .isbn(request.getIsbn())
+                        .price(request.getPrice())
+                        .publishDate(request.getPublishDate())
+                        .build();
+
+                // 3. detailRequest가 있을 때만 BookDetail 생성 + 양방향 연결
+                if (request.getDetailRequest() != null) {
+                    BookDTO.BookDetailDTO detailRequest = request.getDetailRequest();
+                    BookDetail detail = BookDetail.builder()
+                            .description(detailRequest.getDescription())
+                            .language(detailRequest.getLanguage())
+                            .pageCount(detailRequest.getPageCount())
+                            .publisher(detailRequest.getPublisher())
+                            .coverImageUrl(detailRequest.getCoverImageUrl())
+                            .edition(detailRequest.getEdition())
+                            .build();
+
+                    book.setBookDetail(detail);
+                    detail.setBook(book);
+            }
+
+            // 기존 detail이든 새로 만든 detail이든, 필드 값을 채워넣기
+            detail.setDescription(detailRequest.getDescription());
+            detail.setLanguage(detailRequest.getLanguage());
+            detail.setPageCount(detailRequest.getPageCount());
+            detail.setPublisher(detailRequest.getPublisher());
+            detail.setCoverImageUrl(detailRequest.getCoverImageUrl());
+            detail.setEdition(detailRequest.getEdition());
         }
 
-        Book updatedBook = bookRepository.save(existBook);
+        Book updatedBook = bookRepository.save(book);
         return BookDTO.Response.fromEntity(updatedBook);
     }
 
