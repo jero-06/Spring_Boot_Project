@@ -14,7 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/books")
 @RequiredArgsConstructor
-public class BookRestController {
+public class BookController {
     private final BookService bookService;
 
     // 모든 도서 조회
@@ -39,14 +39,14 @@ public class BookRestController {
     }
 
     // 저자로 도서 목록 조회
-    @GetMapping("/search/author?author={author}")
+    @GetMapping("/search/author")
     public ResponseEntity<List<BookDTO.Response>> getBooksByAuthor(@RequestParam String author) {
         List<BookDTO.Response> book = bookService.getBooksByAuthor(author);
         return ResponseEntity.ok(book);
     }
 
     // 제목으로 도서 목록 조회
-    @GetMapping("/search/author?author={author}")
+    @GetMapping("/search/title")
     public ResponseEntity<List<BookDTO.Response>> getBooksByTitle(@RequestParam String title) {
         List<BookDTO.Response> book = bookService.getBooksByTitle(title);
         return ResponseEntity.ok(book);
@@ -55,7 +55,7 @@ public class BookRestController {
     // 새 도서 등록
     @PostMapping
     public ResponseEntity<BookDTO.Response> createBook(
-            @Valid @RequestBody BookDTO.Request) {
+            @Valid @RequestBody BookDTO.Request request) {
         BookDTO.Response response = bookService.createBook(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
@@ -64,7 +64,7 @@ public class BookRestController {
     @PutMapping("/{id}")
     public ResponseEntity<BookDTO.Response> updateBook(
             @PathVariable Long id,
-            @Valid @RequestBody BookDTO.Request) {
+            @Valid @RequestBody BookDTO.Request request) {
         BookDTO.Response response = bookService.updateBook(id, request);
         return ResponseEntity.ok(response);
     }
