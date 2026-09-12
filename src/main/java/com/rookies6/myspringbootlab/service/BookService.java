@@ -21,44 +21,44 @@ public class BookService {
     private final BookRepository bookRepository;
 
     // 모든 도서 목록 조회
-    public List<BookDTO.BookResponse> getAllBooks() {
+    public List<BookDTO.Response> getAllBooks() {
         return bookRepository.findAll()
                 .stream()
-                .map(book -> BookDTO.BookResponse.from(book))
+                .map(book -> BookDTO.Response.fromEntity(book))
                 .toList();
     }
 
     // Id 조회
-    public BookDTO.BookResponse getBookById(Long id) {
+    public BookDTO.Response getBookById(Long id) {
         Book book = bookRepository.findById(id)
                 .orElseThrow(() -> new BusinessException("해당 Id의 도서를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
-        return BookDTO.BookResponse.from(book);
+        return BookDTO.Response.fromEntity(book);
     }
 
     // Isbn 조회
-    public BookDTO.BookResponse getBookByIsbn(String isbn) {
+    public BookDTO.Response getBookByIsbn(String isbn) {
         Book book = bookRepository.findByIsbn(isbn)
                 .orElseThrow(() -> new BusinessException("해당 번호의 도서를 찾을 수 없습니다.", HttpStatus.NOT_FOUND));
-        return BookDTO.BookResponse.from(book);
+        return BookDTO.Response.fromEntity(book);
     }
 
     // 작가 조회
-    public List<BookDTO.BookResponse> getBooksByAuthor(String author) {
+    public List<BookDTO.Response> getBooksByAuthor(String author) {
         return bookRepository.findByAuthorContainingIgnoreCase(author)
                 .stream()
-                .map(book -> BookDTO.BookResponse.from(book))
+                .map(book -> BookDTO.Response.fromEntity(book))
                 .toList();
     }
 
     @Transactional
-    public BookDTO.BookResponse createBook(BookDTO.BookCreateRequest request) {
+    public BookDTO.Response createBook(BookDTO.BookCreateRequest request) {
         Book book = request.toEntity();
         Book savedBook = bookRepository.save(book);
-        return BookDTO.BookResponse.from(savedBook);
+        return BookDTO.Response.from(savedBook);
     }
 
     @Transactional
-    public BookDTO.BookResponse updateBook(Long id, BookDTO.BookUpdateRequest request) {
+    public BookDTO.Response updateBook(Long id, BookDTO.BookUpdateRequest request) {
         Book existBook = bookRepository.findById(id)
                 .orElseThrow(() -> new BusinessException(ErrorCode.RESOURCE_NOT_FOUND,
                         "Book", "id", id));
@@ -77,7 +77,7 @@ public class BookService {
         }
 
         Book updatedBook = bookRepository.save(existBook);
-        return BookDTO.BookResponse.from(updatedBook);
+        return BookDTO.Response.fromEntity(updatedBook);
     }
 
     @Transactional
