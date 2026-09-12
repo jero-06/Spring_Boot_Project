@@ -24,6 +24,6 @@ public class BookDetail {
     private String edition;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = books.id, unique = true)
+    @JoinColumn(name = "book_id", unique = true)
     private Book book;
 }
