@@ -44,7 +44,7 @@ public class BookService {
 
     // 작가 조회
     public List<BookDTO.BookResponse> getBooksByAuthor(String author) {
-        return bookRepository.findByAuthor(author)
+        return bookRepository.findByAuthorContainingIgnoreCase(author)
                 .stream()
                 .map(book -> BookDTO.BookResponse.from(book))
                 .toList();
