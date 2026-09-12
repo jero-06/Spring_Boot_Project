@@ -40,25 +40,25 @@ public class BookRestController {
 
     // 저자로 도서 목록 조회
     @GetMapping("/author/{author}")
-    public ResponseEntity<List<BookDTO.BookResponse>> getBooksByAuthor(@PathVariable String author) {
-        List<BookDTO.BookResponse> book = bookService.getBooksByAuthor(author);
+    public ResponseEntity<List<BookDTO.Response>> getBooksByAuthor(@PathVariable String author) {
+        List<BookDTO.Response> book = bookService.getBooksByAuthor(author);
         return ResponseEntity.ok(book);
     }
 
     // 새 도서 등록
     @PostMapping
-    public ResponseEntity<BookDTO.BookResponse> createBook(
+    public ResponseEntity<BookDTO.Response> createBook(
             @Valid @RequestBody BookDTO.BookCreateRequest request) {
-        BookDTO.BookResponse response = bookService.createBook(request);
+        BookDTO.Response response = bookService.createBook(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     // 도서 정보 수정
     @PutMapping("/{id}")
-    public ResponseEntity<BookDTO.BookResponse> updateBook(
+    public ResponseEntity<BookDTO.Response> updateBook(
             @PathVariable Long id,
             @Valid @RequestBody BookDTO.BookUpdateRequest request) {
-        BookDTO.BookResponse response = bookService.updateBook(id, request);
+        BookDTO.Response response = bookService.updateBook(id, request);
         return ResponseEntity.ok(response);
     }
 
