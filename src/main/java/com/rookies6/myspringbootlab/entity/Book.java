@@ -27,5 +27,8 @@ public class Book {
     private LocalDate publishDate;
     private Integer price;
 
+    @OneToOne(mappedBy = "book", cascade = CascadeType.ALL)
+    private BookDetail bookDetail;
+
 
 }
